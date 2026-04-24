@@ -949,101 +949,218 @@ function LoadEngine() {
   TimeInter.UpdateScreen = requestAnimationFrame(UpdateScreen);
 }
 
-function LoadGame() {
-  if (localStorage.getItem("CFG_IdleN_S") == "true") {
-    let BloodC = null;
-
-    MD.Loaded = true;
-
-    for (let x = 0; x < Number(localStorage.getItem("CFG_IdleN_CLlen")); x++) {
-      CreateCard(
-        Number(localStorage.getItem("CFG_IdleN_Card_Num_" + x)),
-        false,
-        Number(localStorage.getItem("CFG_IdleN_Cell_" + x)),
-        Number(localStorage.getItem("CFG_IdleN_PaternNum_" + x)),
-        Number(localStorage.getItem("CFG_IdleN_Level_" + x)),
-      );
-
-      if (Number(localStorage.getItem("CFG_IdleN_Card_Num_" + x)) == 5)
-        for (let z = 0; z < Web.List.length; z++) Web.List[z].Unlock = true;
-
-      if (Number(localStorage.getItem("CFG_IdleN_Card_Num_" + x)) == 4)
-        BloodC = CL[x];
-
-      if (
-        CL[x].Data.SkillSpec != null &&
-        Number(localStorage.getItem("CFG_IdleN_Card_Num_" + x)) != 0
-      )
-        MD.Ranks[2][0]++;
-    }
-
-    if (BloodC != null) {
-      let Nmu = [
-        [0, 1, 1, 0, 0, 0, 1],
-        [1, 0, 1, 0, 0, 0, 2],
-        [0, 0, 0, 1, 0, 1, 1],
-        [0, 0, 0, 0, 1, 1, 2],
-        [0, 1, 0, 1, 0, 0, 2],
-        [1, 0, 0, 0, 0, 1, 2],
-        [0, 0, 1, 0, 1, 0, 2],
-      ];
-
-      for (let x = 0; x < CL.length; x++)
-        if (
-          localStorage.getItem("CFG_IdleN_Blood_" + x) == "true" &&
-          Number(localStorage.getItem("CFG_IdleN_Card_Num_" + x)) != 4
-        ) {
-          const nm = Math.floor(Math.random() * 7);
-
-          for (let b = 0; b < 6; b++)
-            if (Nmu[nm][b]) {
-              CL[x].Blood.push(BloodC.Blood[b]);
-              CL[x].BloodL++;
-
-              if (
-                BloodC.Blood[b].StarN != null &&
-                CL[x].Stars[BloodC.Blood[b].StarN] == "+"
-              )
-                CL[x].BloodStars[BloodC.Blood[b].StarN] = "+";
-            }
-        }
-    }
-
-    MD.Power = Number(localStorage.getItem("CFG_IdleN_Power"));
-    MD.SoulPower = Number(localStorage.getItem("CFG_IdleN_SoulPower"));
-
-    MD.CardCreated = Number(localStorage.getItem("CFG_IdleN_CardCreated"));
-    MD.CardsSacrificed = Number(
-      localStorage.getItem("CFG_IdleN_CardsSacrificed"),
-    );
-    MD.CardsMerge = Number(localStorage.getItem("CFG_IdleN_CardsMerge"));
-
-    MD.MaxBuiltUp = Number(localStorage.getItem("CFG_IdleN_MaxBuiltUp"));
-    MD.Restarts = Number(localStorage.getItem("CFG_IdleN_Restarts"));
-    MD.Harvests = Number(localStorage.getItem("CFG_IdleN_Harvests"));
-
-    if (localStorage.getItem("CFG_IdleN_CoilCard") == "true")
-      MD.CoilCard = true;
-    else MD.CoilCard = false;
-
-    for (let x = 0; x < 2; x++) {
-      MD.Ranks[x][0] = Number(localStorage.getItem("CFG_IdleN_Ranks_0_" + x));
-      MD.Ranks[x][1] = Number(localStorage.getItem("CFG_IdleN_Ranks_1_" + x));
-    }
-
-    for (let x = 0; x < 2; x++)
-      MD.NomCost[x] = Number(localStorage.getItem("CFG_IdleN_NomCost_" + x));
-
-    for (let x = 0; x < MD.Rank2Cards.lenght; x++)
-      if (localStorage.getItem("CFG_IdleN_R2C_" + x) == "true")
-        MD.Rank2Cards[x][0] = true;
-      else MD.Rank2Cards[x][0] = false;
-
-    CostH();
+function LoadGame(webxdcState) {
+  // Prefer webxdc state (synced across devices), fall back to localStorage
+  if (webxdcState) {
+    LoadFromWebxdcState(webxdcState);
+  } else if (localStorage.getItem("CFG_IdleN_S") == "true") {
+    LoadFromLocalStorage();
   } else if (!MD.Loaded) {
     CreateCard(0);
     CoilCheck();
   }
+}
+
+function LoadFromWebxdcState(state) {
+  let BloodC = null;
+
+  MD.Loaded = true;
+
+  for (let x = 0; x < state.cards.length; x++) {
+    const card = state.cards[x];
+
+    CreateCard(card.cardNum, false, card.cell, card.paternNum, card.level);
+
+    if (card.cardNum == 5)
+      for (let z = 0; z < Web.List.length; z++) Web.List[z].Unlock = true;
+
+    if (card.cardNum == 4) BloodC = CL[x];
+
+    if (CL[x].Data.SkillSpec != null && card.cardNum != 0) MD.Ranks[2][0]++;
+  }
+
+  if (BloodC != null) {
+    let Nmu = [
+      [0, 1, 1, 0, 0, 0, 1],
+      [1, 0, 1, 0, 0, 0, 2],
+      [0, 0, 0, 1, 0, 1, 1],
+      [0, 0, 0, 0, 1, 1, 2],
+      [0, 1, 0, 1, 0, 0, 2],
+      [1, 0, 0, 0, 0, 1, 2],
+      [0, 0, 1, 0, 1, 0, 2],
+    ];
+
+    for (let x = 0; x < CL.length; x++)
+      if (state.cards[x].blood && state.cards[x].cardNum != 4) {
+        const nm = Math.floor(Math.random() * 7);
+
+        for (let b = 0; b < 6; b++)
+          if (Nmu[nm][b]) {
+            CL[x].Blood.push(BloodC.Blood[b]);
+            CL[x].BloodL++;
+
+            if (
+              BloodC.Blood[b].StarN != null &&
+              CL[x].Stars[BloodC.Blood[b].StarN] == "+"
+            )
+              CL[x].BloodStars[BloodC.Blood[b].StarN] = "+";
+          }
+      }
+  }
+
+  MD.Power = Number(state.power);
+  MD.SoulPower = Number(state.soulPower);
+
+  MD.CardCreated = Number(state.cardCreated);
+  MD.CardsSacrificed = Number(state.cardsSacrificed);
+  MD.CardsMerge = Number(state.cardsMerge);
+
+  MD.MaxBuiltUp = Number(state.maxBuiltUp);
+  MD.Restarts = Number(state.restarts);
+  MD.Harvests = Number(state.harvests);
+
+  MD.CoilCard = state.coilCard === true;
+
+  for (let x = 0; x < 2; x++) {
+    MD.Ranks[x][0] = Number(state.ranks[x][0]);
+    MD.Ranks[x][1] = Number(state.ranks[x][1]);
+  }
+
+  for (let x = 0; x < 2; x++) MD.NomCost[x] = Number(state.nomCost[x]);
+
+  for (let x = 0; x < MD.Rank2Cards.lenght; x++)
+    MD.Rank2Cards[x][0] = state.rank2Cards[x] === true;
+
+  CostH();
+}
+
+function LoadFromLocalStorage() {
+  let BloodC = null;
+
+  MD.Loaded = true;
+
+  for (let x = 0; x < Number(localStorage.getItem("CFG_IdleN_CLlen")); x++) {
+    CreateCard(
+      Number(localStorage.getItem("CFG_IdleN_Card_Num_" + x)),
+      false,
+      Number(localStorage.getItem("CFG_IdleN_Cell_" + x)),
+      Number(localStorage.getItem("CFG_IdleN_PaternNum_" + x)),
+      Number(localStorage.getItem("CFG_IdleN_Level_" + x)),
+    );
+
+    if (Number(localStorage.getItem("CFG_IdleN_Card_Num_" + x)) == 5)
+      for (let z = 0; z < Web.List.length; z++) Web.List[z].Unlock = true;
+
+    if (Number(localStorage.getItem("CFG_IdleN_Card_Num_" + x)) == 4)
+      BloodC = CL[x];
+
+    if (
+      CL[x].Data.SkillSpec != null &&
+      Number(localStorage.getItem("CFG_IdleN_Card_Num_" + x)) != 0
+    )
+      MD.Ranks[2][0]++;
+  }
+
+  if (BloodC != null) {
+    let Nmu = [
+      [0, 1, 1, 0, 0, 0, 1],
+      [1, 0, 1, 0, 0, 0, 2],
+      [0, 0, 0, 1, 0, 1, 1],
+      [0, 0, 0, 0, 1, 1, 2],
+      [0, 1, 0, 1, 0, 0, 2],
+      [1, 0, 0, 0, 0, 1, 2],
+      [0, 0, 1, 0, 1, 0, 2],
+    ];
+
+    for (let x = 0; x < CL.length; x++)
+      if (
+        localStorage.getItem("CFG_IdleN_Blood_" + x) == "true" &&
+        Number(localStorage.getItem("CFG_IdleN_Card_Num_" + x)) != 4
+      ) {
+        const nm = Math.floor(Math.random() * 7);
+
+        for (let b = 0; b < 6; b++)
+          if (Nmu[nm][b]) {
+            CL[x].Blood.push(BloodC.Blood[b]);
+            CL[x].BloodL++;
+
+            if (
+              BloodC.Blood[b].StarN != null &&
+              CL[x].Stars[BloodC.Blood[b].StarN] == "+"
+            )
+              CL[x].BloodStars[BloodC.Blood[b].StarN] = "+";
+          }
+      }
+  }
+
+  MD.Power = Number(localStorage.getItem("CFG_IdleN_Power"));
+  MD.SoulPower = Number(localStorage.getItem("CFG_IdleN_SoulPower"));
+
+  MD.CardCreated = Number(localStorage.getItem("CFG_IdleN_CardCreated"));
+  MD.CardsSacrificed = Number(
+    localStorage.getItem("CFG_IdleN_CardsSacrificed"),
+  );
+  MD.CardsMerge = Number(localStorage.getItem("CFG_IdleN_CardsMerge"));
+
+  MD.MaxBuiltUp = Number(localStorage.getItem("CFG_IdleN_MaxBuiltUp"));
+  MD.Restarts = Number(localStorage.getItem("CFG_IdleN_Restarts"));
+  MD.Harvests = Number(localStorage.getItem("CFG_IdleN_Harvests"));
+
+  if (localStorage.getItem("CFG_IdleN_CoilCard") == "true") MD.CoilCard = true;
+  else MD.CoilCard = false;
+
+  for (let x = 0; x < 2; x++) {
+    MD.Ranks[x][0] = Number(localStorage.getItem("CFG_IdleN_Ranks_0_" + x));
+    MD.Ranks[x][1] = Number(localStorage.getItem("CFG_IdleN_Ranks_1_" + x));
+  }
+
+  for (let x = 0; x < 2; x++)
+    MD.NomCost[x] = Number(localStorage.getItem("CFG_IdleN_NomCost_" + x));
+
+  for (let x = 0; x < MD.Rank2Cards.lenght; x++)
+    if (localStorage.getItem("CFG_IdleN_R2C_" + x) == "true")
+      MD.Rank2Cards[x][0] = true;
+    else MD.Rank2Cards[x][0] = false;
+
+  CostH();
+}
+
+function BuildSaveState() {
+  let cards = [];
+
+  for (let x = 0; x < CL.length; x++)
+    if (CL[x] != null)
+      cards.push({
+        cardNum: CL[x].Card_Num,
+        cell: CL[x].Cell,
+        level: CL[x].Level,
+        paternNum: CL[x].PaternNum,
+        blood: CL[x].Blood.length > 0,
+      });
+
+  let rank2Cards = {};
+  for (let x = 0; x < MD.Rank2Cards.lenght; x++)
+    rank2Cards[x] = MD.Rank2Cards[x][0];
+
+  return {
+    type: "IdleNecromancer_state",
+    power: MD.Power,
+    soulPower: MD.SoulPower,
+    cardCreated: MD.CardCreated,
+    cardsSacrificed: MD.CardsSacrificed,
+    cardsMerge: MD.CardsMerge,
+    maxBuiltUp: MD.MaxBuiltUp,
+    restarts: MD.Restarts,
+    harvests: MD.Harvests,
+    coilCard: MD.CoilCard,
+    ranks: [
+      [MD.Ranks[0][0], MD.Ranks[0][1]],
+      [MD.Ranks[1][0], MD.Ranks[1][1]],
+    ],
+    nomCost: [MD.NomCost[0], MD.NomCost[1]],
+    rank2Cards: rank2Cards,
+    cards: cards,
+  };
 }
 
 function SaveVal() {
@@ -1094,6 +1211,8 @@ function SaveMain() {
   localStorage.setItem("CFG_IdleN_CLlen", lenCard);
 
   SaveVal();
+
+  window.webxdc.sendUpdate({ payload: BuildSaveState() }, "Game saved");
 }
 
 function PixelRatio() {
@@ -1162,7 +1281,33 @@ function WebCreate() {
     }
   }
 
-  LoadGame();
+  InitGameState();
+}
+
+function InitGameState() {
+  let latestState = null;
+  let started = false;
+
+  function startGame(state) {
+    if (started) return;
+    started = true;
+    LoadGame(state);
+  }
+
+  window.webxdc.setUpdateListener(function (update) {
+    if (update.payload && update.payload.type === "IdleNecromancer_state") {
+      latestState = update.payload;
+    }
+    if (update.serial === update.max_serial) {
+      startGame(latestState);
+    }
+  }, 0);
+
+  // Fallback: if there are no existing webxdc updates the listener never fires,
+  // so start the game via localStorage (or fresh) on the next tick.
+  setTimeout(function () {
+    startGame(null);
+  }, 0);
 }
 
 function WebDraw() {
@@ -2654,6 +2799,7 @@ function CoilCheck() {
   }
 
   localStorage.setItem("CFG_IdleN_CoilCard", MD.CoilCard);
+  window.webxdc.sendUpdate({ payload: BuildSaveState() }, "Game saved");
 }
 
 // --- //
@@ -2865,6 +3011,14 @@ window.addEventListener("load", function () {
 
   window.addEventListener("blur", onPause);
   window.addEventListener("focus", onResume);
+
+  document.addEventListener("visibilitychange", function () {
+    if (document.visibilityState === "hidden" && MD.Loaded) SaveMain();
+  });
+
+  window.addEventListener("pagehide", function () {
+    if (MD.Loaded) SaveMain();
+  });
 
   Monetization();
 });
