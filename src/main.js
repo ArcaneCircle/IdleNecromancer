@@ -961,7 +961,7 @@ function LoadGame() {
         false,
         Number(localStorage.getItem("CFG_IdleN_Cell_" + x)),
         Number(localStorage.getItem("CFG_IdleN_PaternNum_" + x)),
-        Number(localStorage.getItem("CFG_IdleN_Level_" + x))
+        Number(localStorage.getItem("CFG_IdleN_Level_" + x)),
       );
 
       if (Number(localStorage.getItem("CFG_IdleN_Card_Num_" + x)) == 5)
@@ -1014,7 +1014,7 @@ function LoadGame() {
 
     MD.CardCreated = Number(localStorage.getItem("CFG_IdleN_CardCreated"));
     MD.CardsSacrificed = Number(
-      localStorage.getItem("CFG_IdleN_CardsSacrificed")
+      localStorage.getItem("CFG_IdleN_CardsSacrificed"),
     );
     MD.CardsMerge = Number(localStorage.getItem("CFG_IdleN_CardsMerge"));
 
@@ -1114,7 +1114,6 @@ function PixelRatio() {
     for (
       ;
       Math.floor((windowHeight / (windowWidth + windowHeight)) * 100) != 36;
-
     )
       windowHeight = Math.round(36 * ((windowWidth + windowHeight) / 100));
 
@@ -1122,7 +1121,6 @@ function PixelRatio() {
     for (
       ;
       Math.floor((windowWidth / (windowWidth + windowHeight)) * 100) != 64;
-
     )
       windowWidth = Math.round(64 * ((windowWidth + windowHeight) / 100));
 
@@ -1439,11 +1437,11 @@ function CardDraw(Data) {
   if (Data.MadeCounter > 0) {
     ctx.translate(
       Math.floor(
-        Math.random() * (Data.MadeCounter / 12) - Data.MadeCounter / 25
+        Math.random() * (Data.MadeCounter / 12) - Data.MadeCounter / 25,
       ) * MD.PxW,
       Math.floor(
-        Math.random() * (Data.MadeCounter / 12) - Data.MadeCounter / 25
-      ) * MD.PxH
+        Math.random() * (Data.MadeCounter / 12) - Data.MadeCounter / 25,
+      ) * MD.PxH,
     );
 
     if (Data.MadeCounter > 9)
@@ -1456,7 +1454,7 @@ function CardDraw(Data) {
           Math.floor(Math.random() * 140) * MD.PxW,
           (7 + 200 - Data.MadeCounter + Math.floor(Math.random() * 5)) * MD.PxH,
           4 * MD.PxW,
-          4 * MD.PxH
+          4 * MD.PxH,
         );
 
         if (Math.floor(Math.random() * 2) == 1) ctx.fillStyle = "white";
@@ -1472,7 +1470,7 @@ function CardDraw(Data) {
       -5 * MD.PxW,
       -5 * MD.PxH,
       (10 + 140) * MD.PxW,
-      (10 + 200 - Data.MadeCounter) * MD.PxH
+      (10 + 200 - Data.MadeCounter) * MD.PxH,
     );
     ctx.clip();
 
@@ -1484,7 +1482,7 @@ function CardDraw(Data) {
   if (Data.UseCounter > 0) {
     ctx.translate(
       Math.floor(Math.random() * 5 - 2.5) * MD.PxW,
-      Math.floor(Math.random() * 5 - 2.5) * MD.PxH
+      Math.floor(Math.random() * 5 - 2.5) * MD.PxH,
     );
     Data.UseCounter--;
 
@@ -1540,7 +1538,7 @@ function DeadDraw(Data) {
       Math.floor(Math.random() * 140) * MD.PxW,
       (7 + Data.MadeCounter + Math.floor(Math.random() * 15)) * MD.PxH,
       4 * MD.PxW,
-      4 * MD.PxH
+      4 * MD.PxH,
     );
 
     if (Data.DesType == 1) {
@@ -1558,14 +1556,14 @@ function DeadDraw(Data) {
     -5 * MD.PxW,
     -5 * MD.PxH,
     (10 + 140) * MD.PxW,
-    (10 + Data.MadeCounter) * MD.PxH
+    (10 + Data.MadeCounter) * MD.PxH,
   );
   ctx.clip();
 
   if (Data.DesType != 1)
     ctx.translate(
       Math.floor(Math.random() * 5 - 2.5) * MD.PxW,
-      Math.floor(Math.random() * 5 - 2.5) * MD.PxH
+      Math.floor(Math.random() * 5 - 2.5) * MD.PxH,
     );
 
   MainCardDrew(Data);
@@ -1620,28 +1618,28 @@ function MainCardDrew(Data) {
       [Data.Stars[0] + "     " + Data.Stars[3] + "     " + Data.Stars[5]],
       0,
       70,
-      18
+      18,
     );
     TextDrawer([Data.Stars[1] + "           " + Data.Stars[6]], 0, 70, 100);
     TextDrawer(
       [Data.Stars[2] + "     " + Data.Stars[4] + "     " + Data.Stars[7]],
       0,
       70,
-      192
+      192,
     );
   } else {
     TextDrawer(
       [Data.Stars[0] + "     " + Data.Stars[3] + "     " + Data.Stars[5]],
       13,
       70,
-      18
+      18,
     );
     TextDrawer([Data.Stars[1] + "           " + Data.Stars[6]], 13, 70, 100);
     TextDrawer(
       [Data.Stars[2] + "     " + Data.Stars[4] + "     " + Data.Stars[7]],
       13,
       70,
-      192
+      192,
     );
   }
 
@@ -1672,7 +1670,7 @@ function MainCardDrew(Data) {
           ctx.save();
           ctx.translate(
             MD.DemonEye.PX * 0.8 * MD.PxW,
-            MD.DemonEye.PY * 0.8 * MD.PxH
+            MD.DemonEye.PY * 0.8 * MD.PxH,
           );
           PixelDraw(Data.Data.Eye, true, 101);
           ctx.restore();
@@ -1682,14 +1680,14 @@ function MainCardDrew(Data) {
           ctx.save();
           ctx.translate(
             AutoPS[MD.AutoCard].Mpx * 0.8 * MD.PxW,
-            AutoPS[MD.AutoCard].Mpy * 0.8 * MD.PxH
+            AutoPS[MD.AutoCard].Mpy * 0.8 * MD.PxH,
           );
           PixelDraw(Data.Data.Eye, true, 101);
           ctx.restore();
 
           ctx.translate(
             AutoPS[MD.AutoCard].Mpx * MD.PxW,
-            AutoPS[MD.AutoCard].Mpy * MD.PxH
+            AutoPS[MD.AutoCard].Mpy * MD.PxH,
           );
         }
 
@@ -1702,7 +1700,7 @@ function MainCardDrew(Data) {
         if (MD.AutoPlay || MD.FullHarvest)
           ctx.translate(
             -2 + Math.floor(Math.random() * 4) * MD.PxW,
-            -2 + Math.floor(Math.random() * 4) * MD.PxH
+            -2 + Math.floor(Math.random() * 4) * MD.PxH,
           );
 
         PixelDraw(Data.Data, true, Data.Data.SkillSpec);
@@ -1731,7 +1729,7 @@ function MainCardDrew(Data) {
             (Data.Data.Fire[c][0] + Math.floor(Math.random() * 4)) * MD.PxW,
             (Data.Data.Fire[c][1] + Math.floor(Math.random() * 7)) * MD.PxH,
             2 * MD.PxW,
-            2 * MD.PxH
+            2 * MD.PxH,
           );
 
           ctx.fillStyle = "red";
@@ -1773,7 +1771,7 @@ function MainCardDrew(Data) {
       (28 - 3 * y) * MD.PxW,
       (28 - 3 * y) * MD.PxH,
       (86 + 6 * y) * MD.PxW,
-      (144 + 6 * y) * MD.PxH
+      (144 + 6 * y) * MD.PxH,
     );
 
   ctx.stroke();
@@ -1798,13 +1796,13 @@ function MainCardDrew(Data) {
       ],
       13,
       70,
-      18
+      18,
     );
     TextDrawer(
       [Data.BloodStars[1] + "           " + Data.BloodStars[6]],
       13,
       70,
-      100
+      100,
     );
     TextDrawer(
       [
@@ -1816,7 +1814,7 @@ function MainCardDrew(Data) {
       ],
       13,
       70,
-      192
+      192,
     );
   }
 
@@ -2412,7 +2410,7 @@ function ButtonDraw() {
 
     ctx.translate(
       Buttons[MD.Mobile][x].PX * MD.PxW,
-      Buttons[MD.Mobile][x].PY * MD.PxH
+      Buttons[MD.Mobile][x].PY * MD.PxH,
     );
 
     ctx.beginPath();
@@ -2425,7 +2423,7 @@ function ButtonDraw() {
       0,
       0,
       Buttons[MD.Mobile][x].Width * MD.PxW,
-      Buttons[MD.Mobile][x].Height * MD.PxH
+      Buttons[MD.Mobile][x].Height * MD.PxH,
     );
 
     ctx.fillStyle = "Black";
@@ -2440,7 +2438,7 @@ function ButtonDraw() {
           -4,
           -4,
           8 + Buttons[MD.Mobile][x].Width,
-          8 + Buttons[MD.Mobile][x].Height
+          8 + Buttons[MD.Mobile][x].Height,
         );
 
     if (Buttons[MD.Mobile][x].Clicked)
@@ -2450,7 +2448,7 @@ function ButtonDraw() {
         0,
         0,
         Buttons[MD.Mobile][x].Width,
-        Buttons[MD.Mobile][x].Height
+        Buttons[MD.Mobile][x].Height,
       );
 
     if (x != 3) ctx.stroke();
@@ -2467,7 +2465,7 @@ function ButtonDraw() {
           5,
           5,
           Buttons[MD.Mobile][x].Width - 10,
-          Buttons[MD.Mobile][x].Height - 10
+          Buttons[MD.Mobile][x].Height - 10,
         );
         TextDrawer(["USE CARDS"], 12, Buttons[MD.Mobile][x].Width / 2, 65);
       }
@@ -2478,7 +2476,7 @@ function ButtonDraw() {
           ["RANK " + cinTRoman(Buttons[MD.Mobile][x].Rang + 1) + " CARD"],
           8,
           Buttons[MD.Mobile][x].Width / 2,
-          40
+          40,
         );
 
         if (MD.Cost[x] <= MD.Power)
@@ -2492,21 +2490,21 @@ function ButtonDraw() {
           [cinTRoman(MD.Ranks[x][0] + MD.CoilNum)],
           3,
           Buttons[MD.Mobile][x].Width / 2,
-          5
+          5,
         );
       else
         TextDrawer(
           [cinTRoman(MD.Ranks[x][0])],
           3,
           Buttons[MD.Mobile][x].Width / 2,
-          5
+          5,
         );
     } else if (MD.RestartCounter > 0 && x == 3)
       TextDrawer(
         ["!" + MD.RestartCounter + "!"],
         11,
         Buttons[MD.Mobile][x].Width / 2,
-        50
+        50,
       );
 
     ctx.restore();
@@ -2535,7 +2533,7 @@ function PixelDraw(Data, Hero, Num) {
           if (Num == 0 || Num == 2) {
             ctx.translate(
               Math.floor(Math.random() * 2) * MD.PxW,
-              Math.floor(Math.random() * 2) * MD.PxH
+              Math.floor(Math.random() * 2) * MD.PxH,
             );
             ctx.fillStyle =
               "#" + CD.Colors_Hero.substr(3 * (px[j * Data.S + i] - 1), 3);
@@ -2555,7 +2553,7 @@ function PixelDraw(Data, Hero, Num) {
           (i * Data.M - 0.5) * MD.PxW,
           (j * Data.M - 0.5) * MD.PxH,
           (Data.M + 1) * MD.PxW,
-          (Data.M + 1) * MD.PxH
+          (Data.M + 1) * MD.PxH,
         );
 
         ctx.restore();
@@ -2806,7 +2804,7 @@ window.addEventListener("load", function () {
           MTMove(e);
         }
       },
-      { passive: false }
+      { passive: false },
     );
 
     window.addEventListener(
@@ -2819,7 +2817,7 @@ window.addEventListener("load", function () {
           MTDownStart(e, false);
         }
       },
-      false
+      false,
     );
 
     window.addEventListener(
@@ -2827,7 +2825,7 @@ window.addEventListener("load", function () {
       function (e) {
         if (e.targetTouches.length == 0) MTUpEnd();
       },
-      false
+      false,
     );
   } else {
     window.oncontextmenu = function (e) {
@@ -2842,7 +2840,7 @@ window.addEventListener("load", function () {
 
         MTMove(e);
       },
-      false
+      false,
     );
 
     window.addEventListener(
@@ -2853,7 +2851,7 @@ window.addEventListener("load", function () {
 
         MTDownStart(e, true);
       },
-      false
+      false,
     );
 
     window.addEventListener(
@@ -2861,7 +2859,7 @@ window.addEventListener("load", function () {
       function (e) {
         MTUpEnd();
       },
-      false
+      false,
     );
   }
 
